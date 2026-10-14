@@ -1,5 +1,28 @@
 # Development Log
 
+## 2026-10-13 — Milestone 03, Part 1: Automatic connection paths
+
+### Implementation
+- `app/servers.php`: iterative parent-chain traversal with cycle/missing-parent detection; validates terminal hostnames; generates commands only for routes rooted at `home`.
+- `views/explorer.php`: route breadcrumb and read-only command field for the selected server. Shows an explicit unavailable explanation when needed.
+- `assets/js/connection-paths.js`: copy-to-clipboard with fallback for local HTTP environments.
+- `assets/css/servers.css`: readable responsive connection panel.
+- `views/layout.php`: shared script include.
+
+### Testing checklist
+- [ ] Direct child: `home; connect n00dles`.
+- [ ] Grandchild: `home; connect n00dles; connect max-hardware`.
+- [ ] `home` alone generates `home`.
+- [ ] Disconnected root shows guidance rather than a false route.
+- [ ] Switching sessions changes route source data; archived sessions display routes.
+- [ ] Copy works in local browser; if clipboard permission fails, text is selected for Ctrl+C.
+- [ ] Changing a server parent updates the route after save.
+- [ ] Verify `.env` and exported SQL remain excluded from Git.
+
+### Database
+No migration. Route derives from existing `parent_server_id` and `hostname` fields.
+
+
 ## 2026-10-13 — Milestone 02, Part 4: Server RAM
 
 - Added numeric RAM input with GB/TB units; persisted as `ram_gb DECIMAL(14,3)` (1 TB = 1024 GB).

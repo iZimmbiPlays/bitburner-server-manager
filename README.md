@@ -4,7 +4,7 @@ An unofficial local-first Bitburner companion app.
 
 ## Status
 
-Milestone 02 Part 3 (navigation refactor), v0.2.0-dev. Separate Dashboard, Sessions, Server Explorer and Settings pages. Sessions and server data remain in MySQL. RAM tracking supports GB and TB inputs and is saved in GB. JSON backup/import is not yet implemented.
+Milestone 02 Part 3 (navigation refactor), v0.2.0-dev. Separate Dashboard, Sessions, Server Explorer and Settings pages. Sessions and server data remain in MySQL. RAM tracking supports GB and TB inputs and is saved in GB. Automatic home-to-server connection paths are available. JSON backup/import is not yet implemented.
 
 ## Installation / upgrade
 
@@ -38,3 +38,12 @@ MIT, see `LICENSE`. This fan project is not affiliated with the Bitburner develo
 4. Test a server with `16 GB` and one with `1.5 TB`; inspect the `ram_gb` values (16.000 and 1536.000).
 
 For **new installations only**, use the supplied `database/schema.sql`, which already includes the RAM field. Never rerun that schema as an upgrade on a populated installation. Existing servers have RAM 0 (not recorded), and archived sessions remain unchanged. The saved unit is normalized to GB; the interface displays large values in TB.
+
+
+## Connection paths
+
+In **Server Explorer**, click a recorded server. The **Connection path** card shows the complete route from `home` and a copyable command sequence such as `home; connect n00dles; connect max-hardware`. The terminal starts from `home` each time, so the route works regardless of your current connection.
+
+If a branch does not lead back to `home`, if a parent is missing, or if an invalid/cyclic relationship exists, the app displays an explanation instead of issuing commands. Routes are calculated from the current session's saved parent relationships and update automatically after server edits. Archived sessions support viewing/copying routes.
+
+No new database columns or migrations are required for this upgrade. Replace `app/servers.php`, `views/explorer.php`, `views/layout.php`, `assets/css/servers.css`, and add `assets/js/connection-paths.js`; also update the project documentation. Existing RAM entries and server records are preserved.

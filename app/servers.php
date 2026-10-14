@@ -219,3 +219,58 @@ function excludedParentIds(array $servers, int $serverId): array
     }
     return $excluded;
 }
+
+
+/**
+ * Find the recorded route from home to a server in this gameplay session.
+ * Returns an explicit unavailable state for disconnected, incomplete, or cyclic maps.
+ *
+ * @return array{available: bool, hosts: list<string>, commands: string, reason: string}
+ */
+function serverConnectionPath(array $servers, int $targetId): array
+{
+    $byId = [];
+    foreach ($servers as $server) {
+        $byId[(int) $server['id']] = $server;
+    }
+    $unavailable = static fn(string $reason): array => [
+        'available' => false, 'hosts' => [], 'commands' => '', 'reason' => $reason,
+    ];
+    if (!isset($byId[$targetId])) {
+        return $unavailable('This server is not part of the selected gameplay session.');
+    }
+
+    $seen = [];
+    $reversed = [];
+    $current = $targetId;
+    while (true) {
+        if (isset($seen[$current])) {
+            return $unavailable('Circular connections were detected in this server map.');
+        }
+        $seen[$current] = true;
+        $server = $byId[$current] ?? null;
+        if ($server === null) {
+            return $unavailable('A parent connection is missing from this server map.');
+        }
+        $hostname = (string) $server['hostname'];
+        // Terminal commands are single-line. Reject unsafe/non-terminal hostnames.
+        if (!preg_match('/^[a-zA-Z0-9_.-]+$/D', $hostname)) {
+            return $unavailable('A hostname contains characters unsupported by the terminal command generator.');
+        }
+        $reversed[] = $hostname;
+        if ($server['parent_server_id'] === null) {
+            break;
+        }
+        $current = (int) $server['parent_server_id'];
+    }
+
+    $hosts = array_reverse($reversed);
+    if (strcasecmp($hosts[0], 'home') !== 0) {
+        return $unavailable('This branch does not connect back to home. Check its parent servers.');
+    }
+    $commands = 'home';
+    foreach (array_slice($hosts, 1) as $host) {
+        $commands .= '; connect ' . $host;
+    }
+    return ['available' => true, 'hosts' => $hosts, 'commands' => $commands, 'reason' => ''];
+}

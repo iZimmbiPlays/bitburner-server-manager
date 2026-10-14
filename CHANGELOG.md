@@ -4,6 +4,12 @@ All notable project changes are documented here.
 
 ## [Unreleased]
 
+### Added — Connection paths
+- Generate the saved route from `home` for any selected server, including archived runs.
+- Provide one-click copying of Bitburner terminal `home; connect ...` commands with a clipboard fallback.
+- Explain unavailable routes (missing parents, disconnected branches, cycles, or unsupported hostname characters).
+- No SQL migration required.
+
 ### Added
 - Server RAM amount with GB/TB selector, stored as canonical GB, visible in Server Explorer and dashboard attention list.
 - One-time database migration for existing installations and updated fresh-install schema.

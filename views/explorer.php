@@ -40,6 +40,23 @@
                         <?php if (!$servers): ?><p class="hint">No servers recorded for this game yet.</p><?php endif; ?>
                     </section>
 </div></aside><section class="panel"><div class="panel-heading"><h2>Server details</h2><span>ADD / EDIT</span></div><div class="pane-body">
+                    <?php if ($selectedServer !== null): ?>
+                        <?php $connection = serverConnectionPath($servers, (int) $selectedServer['id']); ?>
+                        <section class="connection-panel" aria-label="Connection path">
+                            <h3>Connection path</h3>
+                            <?php if ($connection['available']): ?>
+                                <p class="hint">Route from home to <strong><?= escape($selectedServer['hostname']) ?></strong></p>
+                                <p class="connection-breadcrumb"><?= escape(implode(' → ', $connection['hosts'])) ?></p>
+                                <label class="connection-label" for="connection-command">Bitburner terminal commands</label>
+                                <textarea id="connection-command" class="connection-command" readonly rows="2" spellcheck="false"><?= escape($connection['commands']) ?></textarea>
+                                <button type="button" class="connection-copy" data-copy-connection="connection-command">Copy terminal commands</button>
+                                <p class="connection-feedback" role="status" aria-live="polite"></p>
+                            <?php else: ?>
+                                <p class="connection-warning" role="status"><?= escape($connection['reason']) ?></p>
+                                <p class="hint">Review the saved parent connections before generating a route.</p>
+                            <?php endif; ?>
+                        </section>
+                    <?php endif; ?>
                     <section class="server-editor" aria-label="Server editor">
                         <h3><?= $selectedServer ? 'Edit server' : 'Add a server' ?></h3>
                         <?php if ($selected['status'] !== 'active'): ?>

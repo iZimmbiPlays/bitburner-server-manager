@@ -28,3 +28,15 @@
 .ram-field{display:grid;grid-template-columns:minmax(0,1fr) 105px;gap:10px}
 .ram-field input,.ram-field select{min-width:0;margin:0}
 @media(max-width:420px){.ram-field{grid-template-columns:minmax(0,1fr) 82px}}
+
+
+/* Selected-server connection path and terminal command copy. */
+.connection-panel{border:1px solid #366754;background:#102922;border-radius:12px;padding:17px;margin-bottom:22px;min-width:0}
+.connection-panel h3{margin:0 0 10px;font-size:15px}
+.connection-breadcrumb{overflow-wrap:anywhere;font:13px/1.7 Consolas,'Cascadia Code',monospace;color:#9af0c2}
+.connection-label{display:block;color:#b4cbc4;font-size:12px;margin:14px 0 7px}
+.connection-command{display:block;width:100%;resize:vertical;min-height:65px;background:#081317;color:#e3f2ec;border:1px solid #3a6657;border-radius:8px;padding:12px;font:13px/1.6 Consolas,'Cascadia Code',monospace;overflow-wrap:anywhere}
+.connection-copy{border:0;border-radius:8px;background:#46b68a;color:#06130e;font-weight:700;padding:11px 16px;margin-top:10px;cursor:pointer}
+.connection-copy:hover{background:#64cf9c}
+.connection-feedback{min-height:1.2em;font-size:12px;color:#9af0c2;margin:9px 0 0}
+.connection-warning{color:#f6c88e;line-height:1.6;font-size:13px}
