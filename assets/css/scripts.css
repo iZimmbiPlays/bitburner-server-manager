@@ -1,0 +1,25 @@
+/* Milestone 06 script library: responsive split-view editor. */
+.scripts-workspace{display:grid;grid-template-columns:minmax(240px,310px) minmax(0,1fr);gap:16px;align-items:start}.scripts-sidebar,.scripts-main{min-width:0}.scripts-header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.scripts-header h2{margin:0 0 10px}.scripts-header a{color:#90e2bd}.scripts-search{width:100%;margin:12px 0;background:#09171a;border:1px solid #35544c;border-radius:7px;color:#f2fff7;padding:11px}.script-link{display:grid;gap:5px;padding:12px 9px;border-bottom:1px solid #244139;color:#e5f5ed;text-decoration:none;overflow-wrap:anywhere}.script-link span{font-size:12px;color:#9cb9ad}.script-link:hover,.script-link.is-selected{background:#16362c}.script-link[hidden]{display:none}.scripts-seed{margin-top:16px}.script-warning{line-height:1.7;padding:14px;background:#102723;border:1px solid #315f4e;border-radius:9px;margin:15px 0}.script-docs{display:grid;grid-template-columns:minmax(100px,150px) 1fr;gap:12px;margin:18px 0}.script-docs dt{color:#9bb8ad}.script-docs dd{margin:0;overflow-wrap:anywhere}.script-code{display:block;width:100%;min-height:380px;box-sizing:border-box;margin-top:8px;background:#061217;border:1px solid #345448;border-radius:9px;color:#e0f6ea;padding:16px;font:13px/1.55 Consolas,Monaco,monospace;tab-size:2;white-space:pre;resize:vertical}.script-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:15px 0}.script-actions form{margin:0}.script-button,.script-actions button,.scripts-seed button{font:inherit;font-size:13px;border-radius:8px;padding:10px 12px;background:#184c3c;color:#e9fff2;border:1px solid #3b956b;text-decoration:none;cursor:pointer}.script-edit-form{display:grid;gap:14px}.script-edit-form label{display:grid;gap:6px;color:#b7d2c5;font-size:13px}.script-edit-form input,.script-edit-form select,.script-edit-form textarea:not(.script-code){box-sizing:border-box;width:100%;background:#08171c;color:#effff5;border:1px solid #35554e;border-radius:8px;padding:10px;font:inherit}.script-edit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.script-revisions{margin:20px 0}.script-revisions details{margin:12px 0}.script-revisions summary{cursor:pointer;color:#a6dabc}@media(max-width:900px){.scripts-workspace{grid-template-columns:1fr}.script-edit-grid{grid-template-columns:1fr}.script-docs{grid-template-columns:1fr}}
+
+/* Milestone 06 Part 2 — collection groupings and protected personal-script deletion. */
+.script-collection-tabs{display:flex;gap:5px;flex-wrap:wrap;margin:0 0 14px}
+.script-collection-tab{border:1px solid #35544c;border-radius:999px;background:#0b201d;color:#b8d2c5;padding:7px 10px;font-size:12px;cursor:pointer}
+.script-collection-tab.is-active{border-color:#52c598;background:#184c3c;color:#e8fff3}
+.script-group{margin:12px 0 18px}.script-group-heading{font-size:13px;letter-spacing:.02em;color:#89e0b6;margin:14px 0 5px}.script-group-heading span{color:#9bb8ad;font-weight:normal}
+.script-list-row{display:flex;align-items:center;border-bottom:1px solid #244139;gap:4px}
+.script-list-row .script-link{flex:1;min-width:0;border-bottom:0}
+.script-delete-form{margin:0;flex:none}
+.script-delete-pill,.script-delete-button{cursor:pointer;border:1px solid #a76565;border-radius:999px;color:#ffd6d6;background:#391f23;font:inherit;font-size:12px;padding:7px 10px}
+.script-delete-pill:hover,.script-delete-button:hover{background:#642a33;color:#fff}
+.script-danger-zone{border:1px solid #754248;border-radius:10px;background:#231c22;padding:16px;margin-top:20px}
+.script-danger-zone strong{color:#ffd6d6}.script-danger-zone .hint{margin:8px 0 12px}
+.script-list-row[hidden],.script-group[hidden],#scripts-empty-filter[hidden]{display:none!important}
+
+/* Milestone 06 Part 3 — accessible independently collapsible script collections. */
+.script-group>summary.script-group-heading{display:flex;align-items:center;gap:7px;cursor:pointer;list-style:none;padding:10px 7px;border:1px solid #294d41;border-radius:8px;background:#102923;user-select:none}
+.script-group>summary.script-group-heading::-webkit-details-marker{display:none}
+.script-group>summary.script-group-heading::before{content:"▸";color:#89e0b6;font-size:16px;transition:transform .15s ease}
+.script-group[open]>summary.script-group-heading::before{transform:rotate(90deg)}
+.script-group>summary.script-group-heading:hover{background:#163b2e;border-color:#52c598}
+.script-group>summary.script-group-heading:focus-visible{outline:2px solid #80e3b0;outline-offset:2px}
+.script-group-content{padding-top:4px}

@@ -1,68 +1,53 @@
 # Bitburner Server Manager
 
-An unofficial local-first Bitburner companion app.
+An unofficial, local-first, MIT-licensed Bitburner companion application (PHP 8.3+, MySQL 8+, Laragon).
 
-## Status
+## Features
 
-Milestone 02 Part 3 (navigation refactor), v0.2.0-dev. Separate Dashboard, Sessions, Server Explorer and Settings pages. Sessions and server data remain in MySQL. RAM tracking supports GB and TB inputs and is saved in GB. Automatic home-to-server connection paths are available. JSON backup/import is not yet implemented.
+- Independent active/archived gameplay sessions, server tree, paths, filters, RAM, root/backdoor status and notes.
+- Settings: validated, versioned, single-session JSON backup and restore into new archived copy.
+- Scripts Library: 16 preserved beginner helper scripts, searchable descriptions, usage/argument/dependency information, copy and .js download, protected originals, editable duplicates, and prior saved code revisions.
 
-## Installation / upgrade
+## Milestone 06 upgrade
 
-- PHP 8.3+, PDO MySQL and mbstring; MySQL 8+; local Apache (Laragon supported).
-- For an existing installation, copy the supplied PHP, CSS and `views/` files into the project root. Keep `.env` and MySQL untouched. **Do not rerun `database/schema.sql`.**
-- The update retains the existing `app/bootstrap.php`, `app/sessions.php`, `app/servers.php` and CSS, and adds `app/page.php`, route PHP files, shared views and `assets/css/navigation.css`.
-- Start Laragon and visit `http://bitburner-server-manager.test/`.
-- Use Dashboard for progress, Sessions for creating/archiving runs, Server Explorer for server editing and Settings for local configuration details.
+1. Back up your MySQL database in HeidiSQL.
+2. Copy the update ZIP contents into the existing project, merging folders. Retain `.env`, current database, and all other application files.
+3. **Run `database/migrations/002_scripts_library.sql` exactly once** against `bitburner_server_manager` in HeidiSQL. Do **not** rerun `database/schema.sql`.
+4. Open `http://bitburner-server-manager.test/scripts.php` and choose **Install 16 beginner helpers**.
+5. The original scripts are protected. Click **Duplicate to My Scripts** to create an editable copy.
+6. Run `php tests/scripts-validation-test.php`, plus the existing backup and connection-path tests.
 
-## Navigation
+Scripts are globally shared across gameplay sessions. Initial code editing uses a monospaced textarea rather than syntax-highlighted Monaco/CodeMirror; syntax highlighting is a planned enhancement. Saved edits snapshot the preceding code (most recent 20 revisions are shown). Built-in sources are preserved from the user's upload, with Heartbleed filled from the user's follow-up source. Source inspection is **not** a guarantee of in-game compatibility.
 
-- `index.php` / `dashboard.php`: progress counters and servers needing root/backdoor.
-- `sessions.php`: create, edit, archive and reactivate gameplay sessions; archived runs stay in a collapsible section.
-- `explorer.php`: nested hierarchy and editable server details; archived runs are viewable but cannot be changed.
-- `settings.php`: database connection and information; backup tools are forthcoming.
-- Top selector switches the viewed game without reactivating it. Use Sessions > Make active to edit an archived game.
+### Safety / dependencies
+
+- `auto-run.js` terminates existing `hack.js` processes before restarting workers; use with care.
+- Some scripts require sibling files such as `hack.js`, `launch.js`, or DNet helpers. See each script's dependency note.
+- `dnet-*.js` rely on the in-game `ns.dnet` APIs, which may not be available in every version or game state.
+- The app never executes Netscript on your computer. Copy or download code and run it inside Bitburner.
 
 ## Security
 
-Local-only; no login. Do not expose this application to the public Internet. Forms retain CSRF checks, use prepared SQL, and escape displayed data. `.env` is excluded from Git.
+**Local use only:** This web app has no login and must not be exposed publicly. All mutating script actions validate CSRF tokens and use prepared statements; output is HTML escaped. Keep `.env`, database exports and private notes out of Git.
+
+## Existing upgrades
+
+- For new installations, use `database/schema.sql` and then `database/migrations/002_scripts_library.sql`; `schema.sql` already includes the server RAM field.
+- For older databases only, `001_add_server_ram.sql` may be required once. Never rerun a migration already applied.
+- `UPDATE_NOTES.md` should stay untracked; `.gitignore` excludes it.
+
+## Long-term
+
+Web edition in PHP/MySQL; future separate desktop edition planned in C#/.NET/Avalonia, using SQLite and portable formats.
 
 ## License
 
-MIT, see `LICENSE`. This fan project is not affiliated with the Bitburner developers.
+MIT. Not affiliated with Bitburner developers.
 
-## RAM tracking upgrade (existing installations)
+## Scripts Library — collections and personal deletion (Milestone 06 Part 2)
 
-1. Export a backup of `bitburner_server_manager` in HeidiSQL.
-2. Run `database/migrations/001_add_server_ram.sql` **once** in HeidiSQL. Do not rerun it after success.
-3. Copy `app/servers.php`, `views/explorer.php`, `views/dashboard.php` and `assets/css/servers.css` into the existing project, keeping all other files.
-4. Test a server with `16 GB` and one with `1.5 TB`; inspect the `ram_gb` values (16.000 and 1536.000).
+The Scripts page separates bundled Regular Scripts, bundled Dark Net Scripts, and My Scripts (user-created scripts and copies). Collection pills and live search help find scripts. Personal entries have Delete controls in both the sidebar and editor. Deletion requires a browser confirmation and a valid CSRF-protected POST; the server rejects deletion of built-in originals. Deleting a personal script also removes its saved revisions using the existing foreign key. Back up or download personal scripts before deletion. No schema change is required for this update.
 
-For **new installations only**, use the supplied `database/schema.sql`, which already includes the RAM field. Never rerun that schema as an upgrade on a populated installation. Existing servers have RAM 0 (not recorded), and archived sessions remain unchanged. The saved unit is normalized to GB; the interface displays large values in TB.
+## Collapsible Scripts collections (Milestone 06 Part 3)
 
-
-## Connection paths
-
-In **Server Explorer**, click a recorded server. The **Connection path** card shows the complete route from `home` and a copyable command sequence such as `home; connect n00dles; connect max-hardware`. The terminal starts from `home` each time, so the route works regardless of your current connection.
-
-If a branch does not lead back to `home`, if a parent is missing, or if an invalid/cyclic relationship exists, the app displays an explanation instead of issuing commands. Routes are calculated from the current session's saved parent relationships and update automatically after server edits. Archived sessions support viewing/copying routes.
-
-No new database columns or migrations are required for this upgrade. Replace `app/servers.php`, `views/explorer.php`, `views/layout.php`, `assets/css/servers.css`, and add `assets/js/connection-paths.js`; also update the project documentation. Existing RAM entries and server records are preserved.
-
-## Searching and filtering servers (Milestone 04)
-
-On **Server Explorer**, enter a hostname or note text and use optional selectors for root access, backdoor installation, required ports, maximum hacking level, and minimum RAM in GB. Filters combine with AND logic. Matching nodes retain their ancestors for network context; ancestors shown only as context do not count as matches. The result counter reports matching servers (not ancestor context). **Clear filters** restores the full tree and its previous expanded state.
-
-All filtering happens in the browser: it does not change MySQL data or saved session records. Archived sessions can be filtered too. No database migration. For existing installations replace `views/explorer.php`, `views/layout.php`, `assets/css/servers.css`, add `assets/js/server-filters.js`, and update documentation.
-
-
-## JSON session backup and restore (Milestone 05)
-
-On Settings, select a session and download its JSON backup. The export includes the session name, BitNode, notes, all servers, access states, ports, hacking level, RAM in GB, server notes, and parent IDs. Data is exported in creation order. JSON files are portable; original database IDs are remapped during import.
-
-To restore, upload a JSON backup through Settings. The import validates the format/version, data types, hostname uniqueness, parent existence, cycles, numerical ranges, and file size (8 MB maximum) *before* committing. A successful import creates **a new archived copy**. It never replaces another session or changes which run is active. An error rolls back the whole import. You may reactivate an imported game using Sessions.
-
-Upgrade: replace `app/page.php`, add `app/backups.php`, replace `views/settings.php` and `.gitignore`, and update documentation. **No database migration** is needed. The application remains local-only; backups include your notes and should be kept private.
-
-### Temporary update notes and GitHub
-
-`UPDATE_NOTES.md` files are excluded by `.gitignore`. If an earlier one is already tracked, run `git rm --cached UPDATE_NOTES.md` once, then commit and push. This removes it from the latest GitHub tree but keeps your local copy. It does not erase the file from past commits/history.
+In Scripts, click or keyboard-activate the Regular Scripts, Dark Net Scripts, or My Scripts heading to independently collapse or expand that collection. All start expanded; text search expands matching collections automatically. This is a display-only update; no SQL migration is needed.

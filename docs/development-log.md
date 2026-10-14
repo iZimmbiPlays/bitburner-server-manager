@@ -1,102 +1,56 @@
 # Development Log
 
-## 2026-10-13 — Milestone 05: JSON gameplay session backups
+## 2026-10-14 — Milestone 06 Part 3: Collapsible script collections
 
-### Design and implementation
-- `app/backups.php`: exported portable single-session JSON with original IDs and parent IDs; imported parent-first with new database IDs.
-- `app/page.php`: POST routing for Settings import/export, CSRF enforcement and redirects.
-- `views/settings.php`: download and upload controls; clear archived-copy explanation.
-- `.gitignore`: ignore temporary `UPDATE_NOTES.md` and local `.bak` files.
-- Import validates all records before starting a transaction; database changes roll back on failure.
-- Imported sessions are archived, leaving all existing records and active game unchanged.
-- No SQL migrations needed. JSON is not a complete database backup; keep HeidiSQL exports for full recovery.
-
-### Tests
-- [ ] Export active game and confirm valid JSON with nested parent references and RAM.
-- [ ] Import exported JSON; confirm new archived session with same server count/order/details.
-- [ ] Verify previously active game remains active and unchanged.
-- [ ] Reactivate import only if intentionally testing that workflow.
-- [ ] Reject malformed JSON, missing parent, duplicate hostname, circular tree, and excess size without creating a session.
-- [ ] Verify `.env`, exports, and temporary update notes are not staged for Git.
-
-## 2026-10-13 — Milestone 04: Filter reset correction
-
-Deferred filter recalculation until after native form reset completes, fixing the two-click issue. Regression verified locally: one click resets all combined filters and restores the original expansion state.
+- Changed collection containers in `views/scripts.php` to native `details`/`summary` controls. They start expanded and can be collapsed independently using mouse or keyboard.
+- Search auto-expands groups containing matching scripts without changing protected built-in or personal-script deletion behavior.
+- Added disclosure styling in `assets/css/scripts.css`. No SQL migration.
+- Local verification: collapse each section, re-expand it, search for an item inside a collapsed section, verify filters and delete controls still work.
 
 
-## 2026-10-13 — Milestone 04: Hierarchy-aware server filtering
+## 2026-10-14 — Milestone 06 Part 1: Scripts Library
 
-- Added client-side hostname/notes search and combinable status, port, skill, and RAM filtering.
-- The filter algorithm includes matching descendants and their parent path, without sorting or mutating data.
-- Filters expand relevant ancestors and restore the previous expansion state when cleared.
-- Added result count and reset, with accessible labels and live status.
-- Changed files: `views/explorer.php`, `views/layout.php`, `assets/css/servers.css`, new `assets/js/server-filters.js`, README and CHANGELOG.
-- No migration or PHP backend changes.
-- Test: name search; note search; combinations; no matches; deep descendant preserves its parents; clearing restores all servers; switching sessions; archived sessions; existing save and copy actions.
-- Security: filter data HTML attribute-escaped in PHP; no HTML injection from browser JS; local-only policy unchanged.
-
-
-
-## 2026-10-13 — Milestone 03, Part 1: Automatic connection paths
-
-### Implementation
-- `app/servers.php`: iterative parent-chain traversal with cycle/missing-parent detection; validates terminal hostnames; generates commands only for routes rooted at `home`.
-- `views/explorer.php`: route breadcrumb and read-only command field for the selected server. Shows an explicit unavailable explanation when needed.
-- `assets/js/connection-paths.js`: copy-to-clipboard with fallback for local HTTP environments.
-- `assets/css/servers.css`: readable responsive connection panel.
-- `views/layout.php`: shared script include.
+### Design
+- Global scripts, independent of game sessions. Existing PHP/MySQL web edition remains local-only; future desktop edition may use C#/.NET/Avalonia with SQLite.
+- Store builtin original source and editable user copies in `script_entries`, snapshots of previous code in `script_revisions`.
+- Initial browser code editor is a dependency-free textarea (tab insertion and copy fallback); advanced syntax highlighting deferred.
+- 16 imported sources come from supplied `Bitburner_Scripts.zip`; the originally empty `dnet-heartbleed.js` is populated from the exact code supplied in chat.
+- Documentation catalog includes category, purpose, usage, arguments, dependencies, safety cautions, and an explicitly unverified-in-game source status.
+- Seeding is idempotent and never silently overwrites built-ins. Built-in script rows are immutable through the app's save action.
+- Security: CSRF for mutations, parameterized SQL, HTML escaping, filename validation for safe downloads, no remote execution, local-only warning. Script payload limit 256 KB.
+- This milestone requires one-time `database/migrations/002_scripts_library.sql`; do not rerun schema.sql.
 
 ### Testing checklist
-- [ ] Direct child: `home; connect n00dles`.
-- [ ] Grandchild: `home; connect n00dles; connect max-hardware`.
-- [ ] `home` alone generates `home`.
-- [ ] Disconnected root shows guidance rather than a false route.
-- [ ] Switching sessions changes route source data; archived sessions display routes.
-- [ ] Copy works in local browser; if clipboard permission fails, text is selected for Ctrl+C.
-- [ ] Changing a server parent updates the route after save.
-- [ ] Verify `.env` and exported SQL remain excluded from Git.
+- [ ] HeidiSQL database backup completed.
+- [ ] Migration applied successfully once.
+- [ ] Built-in import creates 16 entries; repeated import creates no duplicates.
+- [ ] Dark Net Heartbleed script has the supplied contents.
+- [ ] Built-in code cannot be edited; duplicating creates editable copy.
+- [ ] Saved copies retain descriptions, source and revision history.
+- [ ] Copy/download and script search work.
+- [ ] Existing pages and backup flow remain functional.
+- [ ] `php tests/scripts-validation-test.php` passes and Git excludes temporary notes and secrets.
 
-### Database
-No migration. Route derives from existing `parent_server_id` and `hostname` fields.
+## 2026-10-13 — Milestone 05: JSON gameplay session backups
 
+- Portable single-session JSON export/import, validated before transactional archived-session restore; no migration.
+- Tested locally by user: JSON export/import succeeded; backup validation and connection-path tests passed.
+- `.gitignore` excludes temporary UPDATE_NOTES.md; prior file removed from tracking without removing local copy.
 
-## 2026-10-13 — Milestone 02, Part 4: Server RAM
+## 2026-10-13 — Milestone 04: Filters and connection paths
 
-- Added numeric RAM input with GB/TB units; persisted as `ram_gb DECIMAL(14,3)` (1 TB = 1024 GB).
-- Preserved existing server records using a one-time `ALTER TABLE` migration; old RAM defaults to 0, meaning unrecorded.
-- Exposed RAM directly in network tree and dashboard pending-access rows.
-- Updated fresh-install schema, README and CHANGELOG.
-- Security: server-side range/precision and unit validation, parameterized SQL, escaped output.
-- Testing: back up database, run migration once, verify 16 GB = 16.000 and 1.5 TB = 1536.000, edit an existing server, confirm archive unaffected, and verify no PHP syntax errors.
-- Do not commit until Laragon/HeidiSQL smoke tests pass.
+- Server hierarchy filtering with ancestor context, port/skill/RAM/access filters, and one-click reset fix.
+- Saved home-to-server connection commands, validation and copying.
 
+## 2026-10-13 — Milestone 02: App foundation and RAM
 
+- Navigation into Dashboard/Sessions/Explorer/Settings, archived sessions, unlimited parent nesting and session switching.
+- RAM stored as canonical GB with `001_add_server_ram.sql` one-time migration.
 
-## 2026-10-13 — Milestone 02, Part 3: Application navigation refactor
+## 2026-10-14 — Milestone 06 Part 2: Script collections and safe deletion
 
-### Goal
-Replace the single long editor page with dedicated navigation while preserving existing MySQL records and working session/server form actions.
-
-### Files
-- `app/page.php`: shared bootstrap, GET selection, POST routing and POST/redirect/GET.
-- `views/layout.php`: consistent top bar, navigation, current game selector, notices and footer.
-- `views/dashboard.php`, `views/sessions.php`, `views/explorer.php`, `views/settings.php`: individual screens.
-- `index.php`, `dashboard.php`, `sessions.php`, `explorer.php`, `settings.php`: thin PHP entrypoints.
-- `assets/css/navigation.css`: responsive navigation and new page layouts.
-
-### Retained behavior
-- Session creation, renaming, archiving/reactivation and preservation of older runs.
-- Server editing, original creation-order sorting, unlimited tree nesting, visible ports/level/notes, safe parent selection.
-- Prepared SQL, CSRF checks, same database schema and local-only security assumptions.
-
-### Verification checklist (local testing pending)
-- [ ] Dashboard opens with the expected session's counters and pending tasks.
-- [ ] Sessions creates a new game, edits an existing name, and archives/reactivates runs.
-- [ ] Explorer correctly loads its chosen session, edits a server and keeps nested order.
-- [ ] Archived game can be browsed in Explorer without edit controls.
-- [ ] Header selector switches to a different saved run on every page.
-- [ ] Settings opens; browser refresh does not duplicate a POST.
-- [ ] GitHub Desktop shows no local `.env` or MySQL exports staged.
-
-### Database
-No migration. Existing game_sessions and servers tables are unchanged.
+- Users verified bundled installation, protected originals, duplication, and personal script editing.
+- Added Regular, Dark Net and My Scripts collection sections plus filter pills without migrating data.
+- Added personal-script Delete pill in library rows and Delete button in editor, both with explicit confirmation.
+- Enforced CSRF and protected built-in status on the server, with transactional deletion and cascading revision removal.
+- Verify cancel, deletion from both entry points, removal of revisions, and rejection of forged built-in deletion.
