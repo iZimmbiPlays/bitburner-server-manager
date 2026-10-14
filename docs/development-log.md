@@ -1,5 +1,29 @@
 # Development Log
 
+## 2026-10-13 — Milestone 05: JSON gameplay session backups
+
+### Design and implementation
+- `app/backups.php`: exported portable single-session JSON with original IDs and parent IDs; imported parent-first with new database IDs.
+- `app/page.php`: POST routing for Settings import/export, CSRF enforcement and redirects.
+- `views/settings.php`: download and upload controls; clear archived-copy explanation.
+- `.gitignore`: ignore temporary `UPDATE_NOTES.md` and local `.bak` files.
+- Import validates all records before starting a transaction; database changes roll back on failure.
+- Imported sessions are archived, leaving all existing records and active game unchanged.
+- No SQL migrations needed. JSON is not a complete database backup; keep HeidiSQL exports for full recovery.
+
+### Tests
+- [ ] Export active game and confirm valid JSON with nested parent references and RAM.
+- [ ] Import exported JSON; confirm new archived session with same server count/order/details.
+- [ ] Verify previously active game remains active and unchanged.
+- [ ] Reactivate import only if intentionally testing that workflow.
+- [ ] Reject malformed JSON, missing parent, duplicate hostname, circular tree, and excess size without creating a session.
+- [ ] Verify `.env`, exports, and temporary update notes are not staged for Git.
+
+## 2026-10-13 — Milestone 04: Filter reset correction
+
+Deferred filter recalculation until after native form reset completes, fixing the two-click issue. Regression verified locally: one click resets all combined filters and restores the original expansion state.
+
+
 ## 2026-10-13 — Milestone 04: Hierarchy-aware server filtering
 
 - Added client-side hostname/notes search and combinable status, port, skill, and RAM filtering.

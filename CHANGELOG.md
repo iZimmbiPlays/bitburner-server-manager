@@ -4,6 +4,19 @@ All notable project changes are documented here.
 
 ## [Unreleased]
 
+### Added — Milestone 05: JSON backup and restore
+- Export an individual gameplay session and its server hierarchy as versioned portable JSON.
+- Import a validated session as a new archived copy without overwriting existing sessions or changing the active run.
+- Validate parent references, duplicate hostnames, cycles, status fields, numeric ranges, and upload size before transactional restore.
+- Add Settings backup controls; no database migration is required.
+
+### Fixed
+- Defer filter recalculation until after native form reset so Clear filters works with one click.
+
+### Changed
+- Ignore temporary `UPDATE_NOTES.md` files in Git; untrack any previously committed copy without deleting it locally.
+
+
 ### Added — Milestone 04: Server search and filters
 - Search server hostnames and notes instantly from Server Explorer.
 - Filter by root/backdoor state, ports, maximum hacking level, and minimum RAM in GB.

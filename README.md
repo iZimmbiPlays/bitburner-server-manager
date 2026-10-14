@@ -53,3 +53,16 @@ No new database columns or migrations are required for this upgrade. Replace `ap
 On **Server Explorer**, enter a hostname or note text and use optional selectors for root access, backdoor installation, required ports, maximum hacking level, and minimum RAM in GB. Filters combine with AND logic. Matching nodes retain their ancestors for network context; ancestors shown only as context do not count as matches. The result counter reports matching servers (not ancestor context). **Clear filters** restores the full tree and its previous expanded state.
 
 All filtering happens in the browser: it does not change MySQL data or saved session records. Archived sessions can be filtered too. No database migration. For existing installations replace `views/explorer.php`, `views/layout.php`, `assets/css/servers.css`, add `assets/js/server-filters.js`, and update documentation.
+
+
+## JSON session backup and restore (Milestone 05)
+
+On Settings, select a session and download its JSON backup. The export includes the session name, BitNode, notes, all servers, access states, ports, hacking level, RAM in GB, server notes, and parent IDs. Data is exported in creation order. JSON files are portable; original database IDs are remapped during import.
+
+To restore, upload a JSON backup through Settings. The import validates the format/version, data types, hostname uniqueness, parent existence, cycles, numerical ranges, and file size (8 MB maximum) *before* committing. A successful import creates **a new archived copy**. It never replaces another session or changes which run is active. An error rolls back the whole import. You may reactivate an imported game using Sessions.
+
+Upgrade: replace `app/page.php`, add `app/backups.php`, replace `views/settings.php` and `.gitignore`, and update documentation. **No database migration** is needed. The application remains local-only; backups include your notes and should be kept private.
+
+### Temporary update notes and GitHub
+
+`UPDATE_NOTES.md` files are excluded by `.gitignore`. If an earlier one is already tracked, run `git rm --cached UPDATE_NOTES.md` once, then commit and push. This removes it from the latest GitHub tree but keeps your local copy. It does not erase the file from past commits/history.

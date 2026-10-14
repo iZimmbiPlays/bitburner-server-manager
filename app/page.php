@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/sessions.php';
 require_once __DIR__ . '/servers.php';
+require_once __DIR__ . '/backups.php';
 
 startBrowserSession();
 $page = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
@@ -24,14 +25,30 @@ try {
     $db = database();
     if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         // Never accept a POST on an unrelated page.
-        $target = isset($_POST['server_action']) ? 'explorer.php' : 'sessions.php';
+        $target = isset($_POST['backup_action']) ? 'settings.php' : (isset($_POST['server_action']) ? 'explorer.php' : 'sessions.php');
         if ($page !== $target) {
             http_response_code(400);
             exit('Invalid form destination');
         }
         $redirect = $target;
         try {
-            if ($target === 'explorer.php') {
+            if ($target === 'settings.php') {
+                $action = $_POST['backup_action'] ?? '';
+                if ($action === 'export') {
+                    $sessionId = filter_var($_POST['session_id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+                    if (!$sessionId) {
+                        throw new InvalidArgumentException('Select a valid gameplay session.');
+                    }
+                    exportGameBackup($db, (int) $sessionId);
+                    exit;
+                } elseif ($action === 'import') {
+                    $newId = importGameBackup($db);
+                    setFlash('success', 'Backup imported as a new archived session.');
+                    $redirect = 'sessions.php?session=' . $newId;
+                } else {
+                    throw new InvalidArgumentException('Unknown backup action.');
+                }
+            } elseif ($target === 'explorer.php') {
                 $serverId = processServerPost($db);
                 $sessionId = (int) ($_POST['game_session_id'] ?? 0);
                 $redirect = 'explorer.php?session=' . $sessionId . '&server=' . $serverId;
