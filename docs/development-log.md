@@ -119,9 +119,46 @@ This is the cumulative engineering record for the Bitburner Server Manager Web E
 - Replaced `README.md`, `CHANGELOG.md` and this development log with full coherent cumulative documents, preserving known prior milestones and separating verified behavior from roadmap items.
 - No application code or schema modifications are part of the documentation-only reconciliation.
 
+## 2026-10-14 — Milestone 08 Part 1: Read-only network discovery exporter
+
+**Goal:** Establish a safe, portable data format for the next network-import/preview workflow before touching the PHP database.
+
+**Implementation:** `resources/discovery/network-discovery.js` is a Netscript 2 script that starts at `home`, performs breadth-first `ns.scan` traversal with a visited set, assigns the first discovery edge as the parent of each node, reads `ns.getServer` properties (`hasAdminRights`, `backdoorInstalled`, `numOpenPortsRequired`, `requiredHackingSkill`, `maxRam`) and serializes the results. JSON uses `format: bitburner-server-manager-network`, `version: 1`, `generated_at`, `root`, and `servers` with hostname/parent/root/backdoor/ports/level/ram_gb. `ns.write` stores the text at `network-discovery.txt` within the game; `ns.tprint` shows completion. It does not open ports, hack, install backdoors, or contact real hosts.
+
+**Reason for staged delivery:** Validate live game API behavior and output shape before implementing an upload/preview system that can write to MySQL. No change to the 16 existing built-ins or stored session data; no migration.
+
+**Tests:** `tests/network-discovery-test.mjs` simulates a four-server mesh with a cycle/cross-edge, verifies deduplication, breadth-first parents and output schema. Node simulation passed. **User's in-game test is still pending**. Browser preview, schema validation, explicit sync confirmation and note-preserving database changes are future work, not completed in this package.
+
 ## Remaining work / proposed roadmap
 
 - **Automatic Network Discovery:** implement read-only Netscript scanning in Bitburner; export verified network facts; preview additions/changes; preserve manually maintained notes and avoid blind overwrites. Not yet implemented.
 - **Script tooling:** further tutorials, more granular validation, broader in-game tests and automated integration testing. Not yet fully implemented.
 - **Desktop Edition:** separate application planned in C#/.NET/Avalonia with SQLite and Windows/macOS distribution; do not describe it as an existing release.
 - Keep README, changelog and this log synchronized with complete-file updates, not manually pasted snippets.
+
+## 2026-10-14 — Milestone 08 Part 2: Network discovery import and preview
+
+### Scope and implementation
+- Scanner from Part 1 was user-tested successfully in Bitburner. It writes versioned `bitburner-server-manager-network` JSON rooted at `home` with hostname, parent, access state, required ports, skill level and RAM.
+- `app/discovery.php`: validates schema, duplicate hostnames, topology, disconnected/cyclic parent paths, typed flags and numeric ranges. Computes a read-only change report and applies changes in parent-first order using parameterized SQL in a transaction.
+- `discovery.php`: standalone local-only web route using existing database/CSRF/session helpers. Uploading a file stages validated data in PHP session for 30 minutes, renders diff (new/changed/unchanged), and requires an explicit confirmed POST before updating. Apply revalidates the staged data and checks the chosen session is still active.
+- `views/layout.php`: Network Discovery nav item. Dedicated discovery view intentionally has its own layout and explicit navigation to avoid changes to the shared page controller during initial smoke testing.
+- Existing server records matched by case-insensitive hostname have parent, root/backdoor, ports, required level and RAM updated. Personal notes and records absent from the scan are preserved. New hostnames are inserted. Session activity/status and other sessions remain untouched.
+- `resources/builtin-scripts/network-discovery.js` and the full catalog: 17th protected Regular Scripts helper. Existing seed helper is idempotent, so the button installs only the missing built-in source.
+- `tests/discovery-validation-test.php` added. Existing `tests/scripts-validation-test.php` revised to expect 17 helpers. No schema migration and no changes to original uploaded helper code.
+
+### Testing status
+- Completed in this development environment: PHP syntax checks for new files; discovery validation tests; Part 1 scanner simulation test.
+- Awaiting user testing: browser navigation, upload preview, confirmation, data preservation, reimport idempotency, archived-session rejection and helper seeding in Laragon/HeidiSQL.
+- Safety recommendation: export the target session JSON via Settings and consider full HeidiSQL backup before the first confirmed sync.
+
+### Documentation lifecycle
+- Maintain complete `README.md`, `CHANGELOG.md`, and development log on each update. At the feature-complete stage, audit every feature and produce separate end-user manuals for the Web, Windows and macOS editions. Windows and macOS are planned future editions, not current releases.
+
+
+## 2026-10-14 — Milestone 08 Part 2: Discovery confirmation bug fix
+
+- User confirmed scanner output and web preview worked: 67 new, 3 changed, 5 unchanged. Confirmation returned to upload view without updating database.
+- Root cause identified by code inspection: preview stored `validateDiscovery()` normalized output with RAM as decimal strings; confirmation passed those normalized records into the same validator, which requires JSON numeric RAM values. This raised `InvalidArgumentException` before `applyDiscovery()` could run.
+- Fix: stage the original uploaded, validated JSON document server-side; on confirm, revalidate that original JSON, not the normalized rows. Retain transactional writes and user notes preservation. Add in-form errors and regression test.
+- This is a local test pending; do not mark synchronization as passed until the user confirms added/changed/unchanged results in Server Explorer and a repeated scan produces no duplicates. No SQL migration.

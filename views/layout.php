@@ -3,7 +3,7 @@
 <body><main class="shell">
 <header class="topbar"><div class="brand"><span class="brand-icon">&gt;_</span><div><strong>Bitburner Server Manager</strong><small>LOCAL SERVER EXPLORER</small></div></div><span class="tag">v0.2.0-dev</span></header>
 <nav class="main-nav" aria-label="Primary navigation">
-<?php foreach (['index.php' => 'Dashboard', 'sessions.php' => 'Sessions', 'explorer.php' => 'Server Explorer', 'scripts.php' => 'Scripts', 'settings.php' => 'Settings'] as $url => $label): ?>
+<?php foreach (['index.php' => 'Dashboard', 'sessions.php' => 'Sessions', 'explorer.php' => 'Server Explorer', 'discovery.php' => 'Network Discovery', 'scripts.php' => 'Scripts', 'settings.php' => 'Settings'] as $url => $label): ?>
 <a href="<?= $url ?><?= $url === 'explorer.php' && $selected !== null ? '?session=' . (int)$selected['id'] : '' ?>" <?= $page === $url || ($page === 'dashboard.php' && $url === 'index.php') ? 'aria-current="page"' : '' ?>><?= escape($label) ?></a>
 <?php endforeach; ?></nav>
 <?php if ($sessions): ?>

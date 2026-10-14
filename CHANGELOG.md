@@ -2,7 +2,20 @@
 
 All notable changes to Bitburner Server Manager are recorded here. Dates reflect the development sessions; features are marked verified only where locally tested.
 
-## [Unreleased] — 2026-10-14
+## [Unreleased]
+
+### Fixed — Milestone 08 Part 2: Discovery confirmation
+- Keep the original validated JSON document in the server-side preview session. On confirmation, revalidate that source rather than SQL-formatted normalized RAM strings (for example `16.000`).
+- Show a conspicuous import-not-applied error within the upload section if confirmation fails; database writes still use the existing transaction and preserve notes.
+- Add regression coverage for preview/confirmation normalization. No database migration.
+ — 2026-10-14
+
+### Milestone 08 Part 1 — Read-only discovery export (awaiting game test)
+- Added a standalone Netscript `network-discovery.js` that scans from `home`, records reachable hostnames and one reproducible parent route per host, and reads root/backdoor, ports, hacking level and RAM fields.
+- Export a versioned JSON payload into an in-game `network-discovery.txt` using Netscript's file API, with no hacking, port-opening, backdoor installation or database writes.
+- Added a Node-based mock network test for deduplication, cyclic cross-links, parent mapping and export shape; simulation passed. In-game export remains unverified.
+- No SQL migration. Browser-side JSON preview/import and catalog integration are deferred until export is confirmed in Bitburner.
+
 
 ### Documentation reconciliation
 - Rebuilt the full README, changelog and development log using existing repository files, supplied update packages and locally confirmed results from Milestones 01–07.
@@ -58,3 +71,10 @@ All notable changes to Bitburner Server Manager are recorded here. Dates reflect
 - Automatic in-game server discovery and safe network synchronization/preview.
 - Expanded beginner tutorials and integration tests.
 - Separate cross-platform desktop application in C#/.NET/Avalonia with SQLite and Windows/macOS distribution.
+
+### Added — Milestone 08 Part 2: Preview-first network import (2026-10-14)
+- Added a dedicated Network Discovery page with explicit target-session selection, local JSON/TXT upload and three-state preview: new, changed, unchanged.
+- Added complete incoming-record validation, parent connectivity/cycle checks, transaction-based synchronization, and a second confirmation before applying changes.
+- Sync can only edit an active session; it preserves manually maintained notes and servers absent from a scan and never alters other sessions.
+- Added `network-discovery.js` as the 17th bundled protected beginner helper with usage instructions and cautions; retained the original sixteen entries and their source.
+- Updated complete documentation and script count validation; no new SQL migration. Actual importer/synchronization still requires user testing in Laragon.

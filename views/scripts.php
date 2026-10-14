@@ -6,7 +6,7 @@
     <input class="scripts-search" id="script-search" type="search" placeholder="Search scripts or categories…" aria-label="Search scripts">
     <?php if (!$scriptList): ?>
       <p class="hint">No scripts installed yet. Import the bundled helpers below.</p>
-      <form method="post"><input type="hidden" name="csrf_token" value="<?= escape($token) ?>"><input type="hidden" name="script_action" value="seed"><button type="submit">Install 16 beginner helpers</button></form>
+      <form method="post"><input type="hidden" name="csrf_token" value="<?= escape($token) ?>"><input type="hidden" name="script_action" value="seed"><button type="submit">Install built-in beginner helpers</button></form>
     <?php else: ?>
       <div id="script-list">
         <?php

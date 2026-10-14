@@ -11,7 +11,7 @@ foreach ($invalid as $name) {
     if (validScriptFilename($name)) throw new RuntimeException('Expected invalid: ' . $name);
 }
 $catalog = json_decode((string) file_get_contents(dirname(__DIR__) . '/resources/builtin-scripts/catalog.json'), true, 512, JSON_THROW_ON_ERROR);
-if (count($catalog) !== 16) throw new RuntimeException('Expected exactly sixteen helpers');
+if (count($catalog) !== 17) throw new RuntimeException('Expected exactly seventeen helpers');
 foreach ($catalog as $entry) {
     $file = dirname(__DIR__) . '/resources/builtin-scripts/' . $entry['location'];
     if (!is_file($file) || trim((string) file_get_contents($file)) === '') throw new RuntimeException('Missing script ' . $file);

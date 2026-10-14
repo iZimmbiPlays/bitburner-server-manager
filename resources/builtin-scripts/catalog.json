@@ -55,7 +55,7 @@
     "filename": "hack.js",
     "category": "Hacking",
     "level": "Beginner",
-    "description": "Runs the project’s hacking/growing/weakening loop against a selected host.",
+    "description": "Runs the project\u2019s hacking/growing/weakening loop against a selected host.",
     "usage": "run hack.js n00dles",
     "arguments": "Target hostname",
     "dependencies": "",
@@ -159,7 +159,7 @@
     "filename": "dnet-heartbleed.js",
     "category": "Dark Net",
     "level": "Advanced",
-    "description": "Uses the game’s heartbleed mechanic to request log data from a target.",
+    "description": "Uses the game\u2019s heartbleed mechanic to request log data from a target.",
     "usage": "run dnet-heartbleed.js darkweb",
     "arguments": "Target hostname",
     "dependencies": "",
@@ -185,7 +185,7 @@
     "filename": "dnet-recon.js",
     "category": "Dark Net",
     "level": "Advanced",
-    "description": "Probes nearby nodes and attempts the game’s log-scraping method for reconnaissance.",
+    "description": "Probes nearby nodes and attempts the game\u2019s log-scraping method for reconnaissance.",
     "usage": "run dnet-recon.js",
     "arguments": "None",
     "dependencies": "",
@@ -206,5 +206,18 @@
     "location": "Dark_Net/dnet-scan.js",
     "version": "1.0.0",
     "tested": false
+  },
+  {
+    "filename": "network-discovery.js",
+    "category": "Network",
+    "level": "Beginner",
+    "description": "Scans the Bitburner network from home, records parent routes and server properties, and writes a JSON file for preview and import in Server Manager.",
+    "usage": "run network-discovery.js",
+    "arguments": "No arguments. After running, inspect network-discovery.txt with cat and copy its JSON into a local UTF-8 text file for upload.",
+    "dependencies": "None; requires ns.scan, ns.getServer, ns.write.",
+    "caution": "Read-only discovery. The script saves a text file inside Bitburner but does not hack or modify servers. If transferring JSON, do not alter its keys or values.",
+    "location": "network-discovery.js",
+    "version": "1.0.0",
+    "tested": true
   }
 ]
