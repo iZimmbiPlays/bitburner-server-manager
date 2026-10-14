@@ -40,3 +40,18 @@
 .connection-copy:hover{background:#64cf9c}
 .connection-feedback{min-height:1.2em;font-size:12px;color:#9af0c2;margin:9px 0 0}
 .connection-warning{color:#f6c88e;line-height:1.6;font-size:13px}
+
+/* Milestone 04: non-destructive client-side hierarchy filtering. */
+.server-filter-panel{margin:15px 0 20px;padding:14px;border:1px solid #355a4d;border-radius:11px;background:#101f20}
+.server-filter-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;font-size:13px}
+.server-filter-panel label{display:block;font-size:11px;color:#aec7bd;margin:8px 0 5px}
+.server-filter-panel input,.server-filter-panel select{width:100%;min-width:0;background:#081317;color:#e1f2e9;border:1px solid #345b4d;border-radius:7px;padding:9px;font:12px inherit}
+.server-filter-panel input:focus,.server-filter-panel select:focus{outline:2px solid #58be91;outline-offset:1px}
+.server-filter-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 10px}
+.server-filter-grid>div:last-child{grid-column:1/-1}
+.server-filter-clear{border:1px solid #3c6b58;color:#b2f1d1;background:transparent;border-radius:7px;padding:6px 10px;cursor:pointer;font-size:12px}
+.server-filter-count{font-size:12px;color:#80e7b4;font-weight:700;margin:12px 0 2px}
+.server-filter-item[hidden]{display:none!important}
+.server-filter-context>.server-node,.server-filter-context>details>summary .server-node{color:#8da69e}
+.server-filter-match>.server-node,.server-filter-match>details>summary .server-node{color:#89eabd}
+@media(max-width:420px){.server-filter-grid{grid-template-columns:1fr}.server-filter-grid>div:last-child{grid-column:auto}}

@@ -10,6 +10,20 @@
                         <?php if ($selected['status'] === 'active'): ?>
                             <a class="server-new" href="explorer.php?session=<?= (int)$selected['id'] ?>&new_server=1">+ Add server</a>
                         <?php endif; ?>
+                        <form class="server-filter-panel" id="server-filters" role="search" aria-label="Filter recorded servers">
+                            <div class="server-filter-heading"><strong>Find servers</strong><button type="reset" class="server-filter-clear">Clear filters</button></div>
+                            <label for="filter-search">Hostname or notes</label>
+                            <input id="filter-search" type="search" placeholder="Search servers or notes..." autocomplete="off">
+                            <div class="server-filter-grid">
+                                <div><label for="filter-root">Root access</label><select id="filter-root"><option value="any">Any</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+                                <div><label for="filter-backdoor">Backdoor installed</label><select id="filter-backdoor"><option value="any">Any</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+                                <div><label for="filter-ports">Ports required</label><select id="filter-ports"><option value="any">Any</option><?php for ($port = 0; $port <= 5; $port++): ?><option value="<?= $port ?>"><?= $port ?></option><?php endfor; ?></select></div>
+                                <div><label for="filter-level-max">Maximum hacking level</label><input id="filter-level-max" type="number" min="1" step="1" placeholder="Any"></div>
+                                <div><label for="filter-ram-min">Minimum RAM (GB)</label><input id="filter-ram-min" type="number" min="0" step="any" placeholder="Any"></div>
+                            </div>
+                            <p id="server-filter-count" class="server-filter-count" role="status" aria-live="polite"><?= count($servers) ?> matching servers</p>
+                            <p class="hint">Matching servers keep their connection ancestors visible. Filters do not modify saved data.</p>
+                        </form>
                         <?php
                             $children = [];
                             foreach ($servers as $sv) $children[$sv['parent_server_id'] === null ? 0 : (int)$sv['parent_server_id']][] = $sv;
@@ -23,7 +37,7 @@
                                     $label = escape($sv['hostname']);
                                     $target = 'explorer.php?session='.(int)$selected['id'].'&server='.$id;
                                     $style = ($selectedServer !== null && (int)$selectedServer['id'] === $id) ? ' is-selected' : '';
-                                    echo '<li>';
+                                    echo '<li class="server-filter-item" data-server-host="'.escape(mb_strtolower((string)$sv['hostname'])).'" data-server-notes="'.escape(mb_strtolower((string)($sv['notes'] ?? ''))).'" data-root="'.((int)$sv['has_root_access'] ? 'yes' : 'no').'" data-backdoor="'.((int)$sv['has_backdoor'] ? 'yes' : 'no').'" data-ports="'.(int)$sv['ports_required'].'" data-level="'.(int)$sv['hacking_level'].'" data-ram="'.escape((string)($sv['ram_gb'] ?? '0')).'">';
                                     if (!empty($children[$id])) echo '<details open><summary><a class="server-node'.$style.'" href="'.$target.'">'.$label.'</a></summary>';
                                     else echo '<a class="server-node'.$style.'" href="'.$target.'">'.$label.'</a>';
                                     echo '<span class="server-flags">'.((int)$sv['has_root_access'] ? '✓ root' : '○ root').' · '.((int)$sv['has_backdoor'] ? '✓ backdoor' : '○ backdoor').' · Ports: '.(int)$sv['ports_required'].' · Level: '.(int)$sv['hacking_level'].' · RAM: '.escape(formatServerRam($sv['ram_gb'] ?? 0)).'</span>';

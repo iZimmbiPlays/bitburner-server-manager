@@ -4,6 +4,13 @@ All notable project changes are documented here.
 
 ## [Unreleased]
 
+### Added — Milestone 04: Server search and filters
+- Search server hostnames and notes instantly from Server Explorer.
+- Filter by root/backdoor state, ports, maximum hacking level, and minimum RAM in GB.
+- Preserve ancestor connection paths and original sibling creation order while filtering.
+- Clear filters and restore the previous expanded/collapsed tree state; no database changes.
+
+
 ### Added — Connection paths
 - Generate the saved route from `home` for any selected server, including archived runs.
 - Provide one-click copying of Bitburner terminal `home; connect ...` commands with a clipboard fallback.

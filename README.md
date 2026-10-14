@@ -47,3 +47,9 @@ In **Server Explorer**, click a recorded server. The **Connection path** card sh
 If a branch does not lead back to `home`, if a parent is missing, or if an invalid/cyclic relationship exists, the app displays an explanation instead of issuing commands. Routes are calculated from the current session's saved parent relationships and update automatically after server edits. Archived sessions support viewing/copying routes.
 
 No new database columns or migrations are required for this upgrade. Replace `app/servers.php`, `views/explorer.php`, `views/layout.php`, `assets/css/servers.css`, and add `assets/js/connection-paths.js`; also update the project documentation. Existing RAM entries and server records are preserved.
+
+## Searching and filtering servers (Milestone 04)
+
+On **Server Explorer**, enter a hostname or note text and use optional selectors for root access, backdoor installation, required ports, maximum hacking level, and minimum RAM in GB. Filters combine with AND logic. Matching nodes retain their ancestors for network context; ancestors shown only as context do not count as matches. The result counter reports matching servers (not ancestor context). **Clear filters** restores the full tree and its previous expanded state.
+
+All filtering happens in the browser: it does not change MySQL data or saved session records. Archived sessions can be filtered too. No database migration. For existing installations replace `views/explorer.php`, `views/layout.php`, `assets/css/servers.css`, add `assets/js/server-filters.js`, and update documentation.

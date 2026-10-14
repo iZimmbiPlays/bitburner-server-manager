@@ -1,5 +1,18 @@
 # Development Log
 
+## 2026-10-13 — Milestone 04: Hierarchy-aware server filtering
+
+- Added client-side hostname/notes search and combinable status, port, skill, and RAM filtering.
+- The filter algorithm includes matching descendants and their parent path, without sorting or mutating data.
+- Filters expand relevant ancestors and restore the previous expansion state when cleared.
+- Added result count and reset, with accessible labels and live status.
+- Changed files: `views/explorer.php`, `views/layout.php`, `assets/css/servers.css`, new `assets/js/server-filters.js`, README and CHANGELOG.
+- No migration or PHP backend changes.
+- Test: name search; note search; combinations; no matches; deep descendant preserves its parents; clearing restores all servers; switching sessions; archived sessions; existing save and copy actions.
+- Security: filter data HTML attribute-escaped in PHP; no HTML injection from browser JS; local-only policy unchanged.
+
+
+
 ## 2026-10-13 — Milestone 03, Part 1: Automatic connection paths
 
 ### Implementation
