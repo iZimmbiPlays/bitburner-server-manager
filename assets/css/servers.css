@@ -1,0 +1,30 @@
+/* Server explorer and archived-session group. */
+.archive-drawer{margin-top:22px;border-top:1px solid #29433d;padding-top:15px}
+.archive-drawer summary{cursor:pointer;color:#cfe5da;font-size:14px;font-weight:650;padding:10px 0;list-style:disclosure-closed}
+.archive-drawer[open] summary{list-style:disclosure-open}
+.archive-drawer summary span{font:11px monospace;background:#20302e;border-radius:12px;padding:3px 8px;margin-left:7px;color:#9ebbb0}
+.archive-drawer .session-list{margin-top:10px}
+.server-explorer,.server-editor{margin-top:26px;padding-top:20px;border-top:1px solid #29433d}
+.server-explorer h3 small{color:#92b9a8;font-size:12px}
+.server-new{display:inline-block;color:#83e5ae;text-decoration:none;margin:8px 0;font-size:13px}
+.server-tree{list-style:none;padding-left:16px;margin:7px 0;border-left:1px solid #36584d}
+.server-tree>li{padding:6px 0 6px 4px;min-width:0}
+.server-tree details>summary{cursor:pointer}
+.server-node{color:#d8f2e6;font:13px monospace;text-decoration:none;word-break:break-word}
+.server-node:hover,.server-node.is-selected{color:#68e4a9;text-decoration:underline}
+.server-flags{display:block;color:#8da9a0;font:10px monospace;margin-top:4px;margin-left:12px}
+.session-form select{font:14px/1.5 inherit;background:#081317;border:1px solid #31534d;border-radius:8px;color:#e3f2ec;padding:11px 12px;width:100%}
+.server-checkboxes{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px}
+.server-checkboxes label{display:flex;align-items:center;gap:8px}
+.server-checkboxes input{width:auto;accent-color:#46b68a}
+
+/* Additional visible data in the tree. Notes wrap without stretching the pane. */
+.server-inline-notes{display:block;margin:5px 0 3px 12px;color:#b9d2c8;font:12px/1.55 inherit;white-space:normal;overflow-wrap:anywhere}
+.server-flags{line-height:1.6;overflow-wrap:anywhere}
+.server-tree li{overflow-wrap:anywhere}
+.session-form select{font-family:Consolas,'Cascadia Code',monospace;line-height:1.5}
+
+/* Numeric RAM input and unit selector work side by side. */
+.ram-field{display:grid;grid-template-columns:minmax(0,1fr) 105px;gap:10px}
+.ram-field input,.ram-field select{min-width:0;margin:0}
+@media(max-width:420px){.ram-field{grid-template-columns:minmax(0,1fr) 82px}}

@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS servers (
     has_backdoor BOOLEAN NOT NULL DEFAULT FALSE,
     ports_required TINYINT UNSIGNED NOT NULL DEFAULT 0,
     hacking_level INT UNSIGNED NOT NULL DEFAULT 1,
+    ram_gb DECIMAL(14,3) NOT NULL DEFAULT 0.000,
     notes TEXT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -34,5 +35,5 @@ CREATE TABLE IF NOT EXISTS servers (
 ) ENGINE=InnoDB;
 
 -- Application-layer rules to implement next:
--- parent must belong to the same session; maximum nesting depth is 25;
+-- parent must belong to the same session; no hard-coded nesting limit;
 -- no circular ancestry; 'home' has no parent; archived sessions are read-only.
