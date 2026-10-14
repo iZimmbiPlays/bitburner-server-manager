@@ -36,6 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
       event.preventDefault();
     }
   }));
+  document.querySelectorAll('[data-restore-revision]').forEach((form) => form.addEventListener('submit', (event) => {
+    const name = form.dataset.scriptName || 'this script';
+    if (!window.confirm(`Restore this previous version of ${name}? Your current code will be preserved in revision history. Any unsaved changes in the editor will be lost.`)) {
+      event.preventDefault();
+    }
+  }));
   document.querySelectorAll('[data-copy-script]').forEach((button) => button.addEventListener('click', async () => {
     const editor = document.querySelector('#script-code');
     if (!editor) return;

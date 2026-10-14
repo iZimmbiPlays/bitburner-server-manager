@@ -23,3 +23,8 @@
 .script-group>summary.script-group-heading:hover{background:#163b2e;border-color:#52c598}
 .script-group>summary.script-group-heading:focus-visible{outline:2px solid #80e3b0;outline-offset:2px}
 .script-group-content{padding-top:4px}
+
+/* CodeMirror 6 progressive enhancement: the original textarea works until the local bundle is built. */
+.scripts-codemirror-mount { margin: 8px 0 14px; width: 100%; min-width: 0; }
+.scripts-codemirror-mount .cm-editor { width: 100%; }
+.script-code-original[hidden] { display: none !important; }

@@ -73,6 +73,51 @@ function processScriptPost(PDO $db): string
     }
     $id = filter_var($_POST['script_id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
     $source = $id ? loadScript($db, (int) $id) : null;
+    if ($action === 'restore_revision') {
+        if (!$source || (int) $source['is_builtin'] !== 0 || $source['builtin_key'] !== null) {
+            throw new InvalidArgumentException('Only personal scripts can restore revisions.');
+        }
+        $revisionId = filter_var($_POST['revision_id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if (!$revisionId) {
+            throw new InvalidArgumentException('Select a valid script revision.');
+        }
+        if (($_POST['confirm_restore'] ?? '') !== 'yes') {
+            throw new InvalidArgumentException('Confirm revision restoration before continuing.');
+        }
+        $db->beginTransaction();
+        try {
+            // Lock the script first to avoid overwriting a concurrent save.
+            $locked = $db->prepare('SELECT id, code, version_label, is_builtin, builtin_key FROM script_entries WHERE id = ? FOR UPDATE');
+            $locked->execute([(int) $source['id']]);
+            $current = $locked->fetch();
+            if (!$current || (int) $current['is_builtin'] !== 0 || $current['builtin_key'] !== null) {
+                throw new InvalidArgumentException('This script cannot be restored.');
+            }
+            // The revision must belong to this exact script; another script's ID is rejected.
+            $selectRevision = $db->prepare('SELECT code FROM script_revisions WHERE id = ? AND script_id = ?');
+            $selectRevision->execute([(int) $revisionId, (int) $current['id']]);
+            $oldCode = $selectRevision->fetchColumn();
+            if (!is_string($oldCode)) {
+                throw new InvalidArgumentException('That revision was not found for this script.');
+            }
+            if ($oldCode === $current['code']) {
+                throw new InvalidArgumentException('This revision is already the current code.');
+            }
+            $snapshot = $db->prepare('INSERT INTO script_revisions (script_id, version_label, code) VALUES (?, ?, ?)');
+            $snapshot->execute([(int) $current['id'], $current['version_label'], $current['code']]);
+            $update = $db->prepare('UPDATE script_entries SET code = ? WHERE id = ? AND is_builtin = 0 AND builtin_key IS NULL');
+            $update->execute([$oldCode, (int) $current['id']]);
+            if ($update->rowCount() !== 1) {
+                throw new RuntimeException('Unable to restore script revision.');
+            }
+            $db->commit();
+        } catch (Throwable $e) {
+            if ($db->inTransaction()) $db->rollBack();
+            throw $e;
+        }
+        setFlash('success', 'Previous script code restored. Your former current code was saved in revision history.');
+        return 'scripts.php?script=' . (int) $source['id'];
+    }
     if ($action === 'delete') {
         if (!$source) {
             throw new InvalidArgumentException('The selected personal script no longer exists.');

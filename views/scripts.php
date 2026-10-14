@@ -99,7 +99,26 @@
             </form>
           </div>
         <?php endif; ?>
-        <?php if ($scriptRevisions): ?><details class="script-revisions"><summary>Previous saved code (<?= count($scriptRevisions) ?>)</summary><?php foreach ($scriptRevisions as $revision): ?><details><summary><?= escape($revision['version_label']) ?> · <?= escape($revision['created_at']) ?></summary><textarea class="script-code" readonly><?= escape($revision['code']) ?></textarea></details><?php endforeach; ?></details><?php endif; ?>
+        <?php if ($scriptRevisions): ?>
+          <details class="script-revisions">
+            <summary>Previous saved code (<?= count($scriptRevisions) ?>)</summary>
+            <p class="hint">Restore replaces only the source code. Filename, description, usage, and other script details stay unchanged. Your current code is backed up automatically.</p>
+            <?php foreach ($scriptRevisions as $revision): ?>
+              <details>
+                <summary><?= escape($revision['version_label']) ?> · <?= escape($revision['created_at']) ?></summary>
+                <textarea class="script-code" readonly spellcheck="false" aria-label="Previous script source code"><?= escape($revision['code']) ?></textarea>
+                <form method="post" data-restore-revision data-script-name="<?= escape($s['filename']) ?>">
+                  <input type="hidden" name="csrf_token" value="<?= escape($token) ?>">
+                  <input type="hidden" name="script_action" value="restore_revision">
+                  <input type="hidden" name="script_id" value="<?= (int) $s['id'] ?>">
+                  <input type="hidden" name="revision_id" value="<?= (int) $revision['id'] ?>">
+                  <input type="hidden" name="confirm_restore" value="yes">
+                  <button type="submit">Restore this revision</button>
+                </form>
+              </details>
+            <?php endforeach; ?>
+          </details>
+        <?php endif; ?>
       <?php endif; ?>
     <?php else: ?><h2>Select a script</h2><p class="hint">Choose a helper on the left or create your own. Built-in files remain unchanged until you explicitly duplicate them.</p><?php endif; ?>
   </section>

@@ -1,68 +1,60 @@
 # Changelog
 
-All notable project changes are documented here.
+All notable changes to Bitburner Server Manager are recorded here. Dates reflect the development sessions; features are marked verified only where locally tested.
 
-## [Unreleased]
+## [Unreleased] — 2026-10-14
 
-### Improved — Milestone 06: Collapsible script collections
-- Make Regular Scripts, Dark Net Scripts, and My Scripts headings independently expandable and collapsible using keyboard-accessible native disclosure controls.
-- Automatically expand matching collections during text search while retaining manual collapse behavior otherwise.
+### Documentation reconciliation
+- Rebuilt the full README, changelog and development log using existing repository files, supplied update packages and locally confirmed results from Milestones 01–07.
+- Corrected outdated references to the textarea-only editor, incomplete testing checklists and out-of-order milestone entries.
+- Clarified that the current web application is local-only, session JSON backups do not include scripts, and future network discovery and desktop editions are not implemented.
 
+### Milestone 07 — Scripts editor improvements
+- Added one-click **Restore this revision** for personal scripts with confirmation, ownership checks, built-in protection, transactional replacement and snapshot of the previously current code.
+- Added an offline-capable CodeMirror 6 JavaScript editor integration, with line numbers, bracket matching, indentation, search, undo/redo and textarea fallback. Build uses npm and esbuild; no database migration.
+- Updated the syntax highlighting and editor chrome to a VS Code Dark+-inspired color scheme. The user confirmed the editor loaded, local bundle build completed, and Dark+ palette looked better.
 
-### Added — Milestone 06 Part 1: Scripts library
-- Added global Scripts page with searchable built-in and personal scripts, documentation, copy/download, and editable code.
-- Added protected built-in scripts, duplication workflow, and code revision snapshots on saves.
-- Bundled 16 supplied scripts exactly as provided, adding the user's supplied `dnet-heartbleed.js` to the empty original.
-- Added one-time `002_scripts_library.sql` migration, installation helper, and scripts validation test.
-- Clearly identify scripts as source-preserved, not all in-game verified, and document process-termination warnings and Dark Net prerequisites.
+### Milestone 06 — Scripts Library
+- Added Scripts navigation and a global, MySQL-backed script collection independent of gameplay sessions.
+- Added `002_scripts_library.sql` to create `script_entries` and `script_revisions` tables; migration applied successfully locally.
+- Installed 16 source-preserved built-in examples, including the user-provided replacement source for `dnet-heartbleed.js`, with beginner descriptions, requirements, commands and warnings.
+- Added read-only built-in scripts, duplication into personal scripts, personal script creation/editing, `.js` download, code copy, and revision snapshots on save.
+- Added Regular Scripts, Dark Net Scripts and My Scripts groupings, collection tabs, search, independent collapsible headings and automatic expansion for matching search results.
+- Added confirmed personal-script deletion from a sidebar pill or editor; protect originals and cascade deletion of personal revisions.
+- Verified locally: bundle installation, script list, protection, duplication, persistent editing, collection collapse, both deletion paths and revision history.
+- Passed PHP scripts, backups and connection-paths test suites after Milestone 06; user confirmed the Milestone 06 commit/push.
 
-### Added — Milestone 05: JSON backup and restore
-- Export an individual gameplay session and its server hierarchy as versioned portable JSON.
-- Import a validated session as a new archived copy without overwriting existing sessions or changing the active run.
-- Validate parent references, duplicate hostnames, cycles, status fields, numeric ranges, and upload size before transactional restore.
-- Add Settings backup controls; no database migration is required.
+## [0.2.0-dev] — 2026-10-13
 
-### Fixed
-- Defer filter recalculation until after native form reset so Clear filters works with one click.
+### Milestone 05 — Portable gameplay session backups
+- Added Settings JSON session export/import, format/version checks, file size cap, server topology preservation and server-ID remapping.
+- Imports validate full data and use a transaction; restore creates a separate archived session while preserving the active session and existing records.
+- Added validation tests and ignored temporary `UPDATE_NOTES.md` files; removed prior tracked copy from the current repository tree without deleting the local file.
+- Verified locally: JSON download, import of a new archived session, unchanged active game and backup validation tests.
 
-### Changed
-- Ignore temporary `UPDATE_NOTES.md` files in Git; untrack any previously committed copy without deleting it locally.
+### Milestone 04 — Server filtering
+- Added immediate search by hostname or notes and combinable filters for access status, ports, hacking skill and RAM.
+- Kept matching ancestors visible so nested results retain their hierarchy; preserved creation order.
+- Fixed Clear filters requiring two clicks by waiting until the native reset completed.
 
-### Added — Milestone 04: Server search and filters
-- Search server hostnames and notes instantly from Server Explorer.
-- Filter by root/backdoor state, ports, maximum hacking level, and minimum RAM in GB.
-- Preserve ancestor connection paths and original sibling creation order while filtering.
-- Clear filters and restore the previous expanded/collapsed tree state; no database changes.
+### Milestone 03 — Connection routes
+- Generated home-to-server terminal paths from saved hierarchy records, with copy control and explanations for broken, disconnected or circular paths.
+- Added regression tests; confirmed paths test passing locally.
 
-### Added — Connection paths
-- Generate the saved route from `home` for any selected server, including archived runs.
-- Provide one-click copying of Bitburner terminal `home; connect ...` commands with a clipboard fallback.
-- Explain unavailable routes (missing parents, disconnected branches, cycles, or unsupported hostname characters).
-- No SQL migration required.
+### Milestone 02 — Sessions, server explorer and navigation
+- Added persistent active/archived gameplay sessions, reactivation and separate run management.
+- Added split-view parent-child Server Explorer with unlimited nesting and creation-order sibling sorting.
+- Tracked root/backdoor status, ports, hacking level and notes.
+- Added GB/TB RAM entry, stored in canonical GB, with one-time `001_add_server_ram.sql` migration and fresh-install schema update.
+- Split navigation into Dashboard, Sessions, Server Explorer and Settings, with selected-session switching.
 
-### Added
-- Server RAM amount with GB/TB selector, stored as canonical GB, visible in Server Explorer and dashboard attention list.
-- One-time database migration for existing installations and updated fresh-install schema.
-- Separate Dashboard, Sessions, Server Explorer, and Settings pages, with a shared navigation bar and global session selector.
-- Progress summary and pending-access links on the Dashboard.
-- Server Explorer as a dedicated split-view workspace.
-- Active and archived session groups remain on the Sessions page.
+## [0.1.0] — 2026-10-13
 
-### Changed
-- Moved request handling into `app/page.php` while retaining existing parameterized server and session services.
-- Post requests redirect back to the appropriate page.
-- Server trees and parent choices preserve creation order with no artificial nesting limit.
+### Milestone 01 — Initial foundation
+- Created initial PHP/MySQL local companion application, schema, application structure and repository documentation.
 
-### Planned
-- Network discovery/synchronization; more advanced script editor syntax highlighting; cross-platform desktop edition in C#/.NET/Avalonia and SQLite.
+## Planned (not released)
 
-## [0.1.0] - 2026-10-13
-
-### Added
-- Initial PHP and MySQL application foundation, split-view placeholder, schema, and Git documentation.
-
-### Added — Milestone 06 Part 2: Script collections and deletion
-- Group built-in regular and Dark Net helpers separately, with collection filters and live search.
-- Show personal scripts under My Scripts, with a Delete pill and an editor Delete button.
-- Confirm destructive action; server refuses deletion of protected built-in scripts.
-- Cascade personal script revision history deletion; no database migration required.
+- Automatic in-game server discovery and safe network synchronization/preview.
+- Expanded beginner tutorials and integration tests.
+- Separate cross-platform desktop application in C#/.NET/Avalonia with SQLite and Windows/macOS distribution.

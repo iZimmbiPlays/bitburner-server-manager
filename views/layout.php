@@ -13,4 +13,4 @@
 <?php if ($error !== null): ?><div class="notice notice-error" role="alert"><?= escape($error) ?></div><?php endif; ?>
 <?php if ($flash !== null): ?><div class="notice <?= $flash['type'] === 'success' ? 'notice-success' : 'notice-error' ?>" role="status"><?= escape((string)$flash['message']) ?></div><?php endif; ?>
 <?php require __DIR__ . '/' . (in_array($page, ['index.php', 'dashboard.php'], true) ? 'dashboard' : pathinfo($page, PATHINFO_FILENAME)) . '.php'; ?>
-<footer>Unofficial fan-made Bitburner companion tool. Local use only.</footer></main><script defer src="assets/js/connection-paths.js"></script><script defer src="assets/js/server-filters.js"></script><script defer src="assets/js/scripts.js"></script></body></html>
+<footer>Unofficial fan-made Bitburner companion tool. Local use only.</footer></main><script defer src="assets/js/connection-paths.js"></script><script defer src="assets/js/server-filters.js"></script><?php if ($page === 'scripts.php' && is_file(__DIR__ . '/../assets/js/codemirror.bundle.js')): ?><script defer src="assets/js/codemirror.bundle.js"></script><?php endif; ?><script defer src="assets/js/scripts.js"></script></body></html>

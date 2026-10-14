@@ -121,7 +121,7 @@ try {
             $activeScript = loadScript($db, (int) $scriptList[0]['id']);
         }
         if ($activeScript && !(int) $activeScript['is_builtin']) {
-            $revisionsQuery = $db->prepare('SELECT version_label, code, created_at FROM script_revisions WHERE script_id = ? ORDER BY id DESC LIMIT 20');
+            $revisionsQuery = $db->prepare('SELECT id, version_label, code, created_at FROM script_revisions WHERE script_id = ? ORDER BY id DESC LIMIT 20');
             $revisionsQuery->execute([(int) $activeScript['id']]);
             $scriptRevisions = $revisionsQuery->fetchAll();
         }
